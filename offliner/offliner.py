@@ -3,6 +3,7 @@
 from itertools import cycle, tee, izip
 import requests
 from bs4 import BeautifulSoup
+import json
 
 url_base = 'http://www.etymonline.com'
 url_listing = '/index.php?l='
@@ -13,6 +14,7 @@ letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
 
 
 def letter_loop():
+    print "["
     for letter in letters:
         page_num = 0
         url = url_base + url_listing + letter + url_param_page + str(page_num)
@@ -25,10 +27,16 @@ def letter_loop():
         if pagination:
             for link in pagination.find_all("a"):
                 for word, etymology in handle_page(url_base + link['href']):
-                    print word.text
+                    print_json_etym(word, etymology)
         else:
             for word, etymology in handle_page(url_base + link['href']):
-                print word.text
+                print_json_etym(word, etymology)
+    print "]"
+
+def print_json_etym(word, etymology):
+    word = word.text.replace("\n", " ").strip()
+    etymology = etymology.text.replace("\n", " ").strip()
+    print json.dumps({"word": word, "etymology": etymology}, sort_keys=False), ","
 
 #http://stackoverflow.com/a/2167877/1200542
 def pairwise(seq):
