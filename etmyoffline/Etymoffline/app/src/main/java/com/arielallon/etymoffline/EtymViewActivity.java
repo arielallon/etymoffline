@@ -35,8 +35,8 @@ public class EtymViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_etym_view);
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
@@ -44,6 +44,8 @@ public class EtymViewActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
         bind(etym);
+
+        getSupportActionBar().setSubtitle(etym.getWord());
     }
 
     @Override
