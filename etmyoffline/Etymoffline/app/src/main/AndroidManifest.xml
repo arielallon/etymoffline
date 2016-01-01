@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.arielallon.etymoffline">
+    package="com.arielallon.etymoffline"
+    android:installLocation="auto">
 
     <application
         android:allowBackup="true"
