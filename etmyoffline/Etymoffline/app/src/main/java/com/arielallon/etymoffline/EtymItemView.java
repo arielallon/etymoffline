@@ -10,11 +10,13 @@ import com.arielallon.etymoffline.model.Etym;
 
 public class EtymItemView extends RelativeLayout
 {
-    @Bind(R.id.word)
+    @Bind(R.id.word_item)
     TextView word;
 
-    @Bind(R.id.etymology)
+    @Bind(R.id.etymology_item)
     TextView etymology;
+
+    Etym etym = null;
 
     public EtymItemView(Context context) {
         super(context);
@@ -29,5 +31,11 @@ public class EtymItemView extends RelativeLayout
     public void bind(Etym etym) {
         word.setText(etym.getWord());
         etymology.setText(etym.getEtymology());
+        this.etym = etym;
+    }
+
+    public Etym getEtym()
+    {
+        return etym;
     }
 }

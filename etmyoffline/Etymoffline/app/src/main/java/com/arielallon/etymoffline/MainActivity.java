@@ -1,7 +1,9 @@
 package com.arielallon.etymoffline;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -27,6 +29,8 @@ import java.io.File;
 
 import com.arielallon.etymoffline.model.Etym;
 
+import org.parceler.Parcels;
+
 import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -41,6 +45,9 @@ public class MainActivity extends AppCompatActivity {
     private RealmSearchView realmSearchView;
     private EtymRecyclerViewAdapter adapter;
     private Realm realm;
+
+    public final static String EXTRA_WORD = "com.arielallon.etymoffline.WORD";
+    public final static String EXTRA_ETYM = "com.arielallon.etymoffline.ETYM";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,5 +159,21 @@ public class MainActivity extends AppCompatActivity {
             viewHolder.etymItemView.bind(etym);
         }
 
+    }
+
+    public void openWord(View view)
+    {
+        Intent intent = new Intent(this, EtymViewActivity.class);
+//        View word = findViewById(R.id.word_item);
+        EtymItemView item = (EtymItemView) view.getParent();
+        Etym etym = item.getEtym();
+        Parcelable petym = Parcels.wrap(etym);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(EXTRA_ETYM, petym);
+//        String w = word.toString();
+//        intent.putExtra(EXTRA_WORD, w);
+//        intent.putExtra(EXTRA_ETYM, petym);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 }

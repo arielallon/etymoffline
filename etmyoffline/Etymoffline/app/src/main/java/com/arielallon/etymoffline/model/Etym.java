@@ -1,11 +1,22 @@
 package com.arielallon.etymoffline.model;
 
+//import android.os.Parcel;
+
+import org.parceler.Parcel;
+
+import java.io.Serializable;
+
+import io.realm.EtymRealmProxy;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
-public class Etym extends RealmObject
-{
+@Parcel(implementations = { EtymRealmProxy.class },
+        value = Parcel.Serialization.BEAN,
+        analyze = { Etym.class })
+public class Etym extends RealmObject {
+//    @todo add a pk, since multiple words may match
+
     @Index
     private String word;
     private String etymology;
