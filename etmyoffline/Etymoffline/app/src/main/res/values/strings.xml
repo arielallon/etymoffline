@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Etymoffline</string>
+    <string name="search_hint">Find an etymology...</string>
 </resources>

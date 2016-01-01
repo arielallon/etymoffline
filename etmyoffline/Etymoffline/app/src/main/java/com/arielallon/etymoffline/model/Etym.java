@@ -1,11 +1,12 @@
 package com.arielallon.etymoffline.model;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 public class Etym extends RealmObject
 {
-    @PrimaryKey
+    @Index
     private String word;
     private String etymology;
 
