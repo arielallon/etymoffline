@@ -18,7 +18,9 @@ import android.util.Log;
 //import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -32,13 +34,16 @@ import com.arielallon.etymoffline.model.Etym;
 import org.parceler.Parcels;
 
 import io.realm.Case;
+import io.realm.DynamicRealm;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import co.moonmonkeylabs.realmsearchview.RealmSearchAdapter;
 import co.moonmonkeylabs.realmsearchview.RealmSearchView;
 import co.moonmonkeylabs.realmsearchview.RealmSearchViewHolder;
+import io.realm.RealmMigration;
 import io.realm.RealmViewHolder;
 import io.realm.Sort;
+import io.realm.exceptions.RealmMigrationNeededException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -54,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        resetRealm();
+//        resetRealm();
         loadEtymData();
 
         RealmSearchView realmSearchView = (RealmSearchView) findViewById(R.id.search_view);
@@ -79,7 +84,32 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void loadEtymData() {
+    private void loadEtymData()
+    {
+        String realmFileName = "default.realm";
+
+        try {
+            RealmConfiguration realmConfig = new RealmConfiguration
+                    .Builder(this)
+                    .build();
+            String realmPath = realmConfig.getPath();
+            File realmFile = new File(realmPath + realmFileName);
+            if (!realmFile.exists() || realmFile.length() < 1024) {
+                loadEtymDataFromRealm(realmFileName, realmPath);
+            }
+
+            Realm.getInstance(realmConfig);
+        } catch (RealmMigrationNeededException exception) {
+            loadEtymDataFromJson();
+        }
+    }
+
+    private void loadEtymDataFromRealm(String realmFileName, String realmPath)
+    {
+        copyAsset(realmFileName, realmPath);
+    }
+
+    private void loadEtymDataFromJson() {
         AssetManager assetManager = getAssets();
 
         try {
@@ -175,5 +205,51 @@ public class MainActivity extends AppCompatActivity {
 //        intent.putExtra(EXTRA_ETYM, petym);
         intent.putExtras(bundle);
         startActivity(intent);
+    }
+
+    private void copyAsset(String filename, String destinationPath) {
+        AssetManager assetManager = getAssets();
+        String[] files = null;
+        try {
+            files = assetManager.list("");
+        } catch (IOException e) {
+            Log.e("tag", "Failed to get asset file list.", e);
+        }
+        if (files != null) {
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                in = assetManager.open(filename);
+                File outFile = new File(destinationPath);
+                out = new FileOutputStream(outFile);
+                copyFile(in, out);
+            } catch(IOException e) {
+                Log.e("tag", "Failed to copy asset file: " + filename, e);
+            }
+            finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        // NOOP
+                    }
+                }
+                if (out != null) {
+                    try {
+                        out.close();
+                    } catch (IOException e) {
+                        // NOOP
+                    }
+                }
+            }
+        }
+    }
+
+    private void copyFile(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int read;
+        while((read = in.read(buffer)) != -1){
+            out.write(buffer, 0, read);
+        }
     }
 }
